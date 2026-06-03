@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="Blackjack"
+             targetNamespace="http://ejemplo.com/blackjack.wsdl"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://ejemplo.com/blackjack.wsdl"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <types>
+        <xsd:schema targetNamespace="http://ejemplo.com/blackjack.wsdl">
+            
+            <xsd:element name="PedirCarta">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="id_partida" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="PedirCartaResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="nueva_carta" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+        </xsd:schema>
+    </types>
+
+    <message name="PedirCartaRequestMsg">
+        <part name="parameters" element="tns:PedirCarta"/>
+    </message>
+    <message name="PedirCartaResponseMsg">
+        <part name="parameters" element="tns:PedirCartaResponse"/>
+    </message>
+
+    <portType name="BlackjackPortType">
+        <operation name="PedirCarta">
+            <input message="tns:PedirCartaRequestMsg"/>
+            <output message="tns:PedirCartaResponseMsg"/>
+        </operation>
+    </portType>
+
+    <binding name="BlackjackBinding" type="tns:BlackjackPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="PedirCarta">
+            <soap:operation soapAction="http://ejemplo.com/PedirCarta"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="BlackjackService">
+        <port name="BlackjackPort" binding="tns:BlackjackBinding">
+            <soap:address location="http://127.0.0.1:8080"/>
+        </port>
+    </service>
+    
+</definitions>

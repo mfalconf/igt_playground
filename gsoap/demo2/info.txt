@@ -1,0 +1,14 @@
+Copiar el archivo typemap.dat que contiene las reglas de conversion de tipos
+cp /usr/share/gsoap/WS/typemap.dat typemap.dat
+
+Para traducir el contrato WSDL (blackjack.wsdl) a un Contrato de C++, hacer:
+  wsdl2h -t typemap.dat -o blackjack.h blackjack.wsdl
+
+Salida: blackjack.h
+
+Para generar las clases cliente y servidor correspondientes usando blackjack.h, hacer:
+  soapcpp2 -j blackjack.h
+
+Salida: Varios archivos, pero los mas importantes son:
+  soapBlackjackBindingProxy.cpp/.h  --> Implementacion del proxy entre el cliente y el server.
+  soapBlackjackBindingService.cpp/.h --> Implementacion del server.

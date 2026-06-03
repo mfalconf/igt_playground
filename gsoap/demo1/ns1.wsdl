@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="Service"
+  targetNamespace="http://tempuri.org/ns1.xsd/Service.wsdl"
+  xmlns:tns="http://tempuri.org/ns1.xsd/Service.wsdl"
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:ns1="http://tempuri.org/ns1.xsd"
+  xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:HTTP="http://schemas.xmlsoap.org/wsdl/http/"
+  xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+  xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+  xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+<types>
+
+  <schema targetNamespace="http://tempuri.org/ns1.xsd"
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:ns1="http://tempuri.org/ns1.xsd"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="unqualified"
+    attributeFormDefault="unqualified">
+    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+    <!-- operation request element -->
+    <element name="HacerAlgo">
+      <complexType>
+          <sequence>
+            <element name="parametro" type="xsd:string" minOccurs="0" maxOccurs="1"/><!-- ns1__HacerAlgo::parametro -->
+          </sequence>
+      </complexType>
+    </element>
+    <!-- operation response element -->
+    <element name="HacerAlgoResponse">
+      <complexType>
+          <sequence>
+            <element name="resultado" type="xsd:int" minOccurs="1" maxOccurs="1"/><!-- ns1__HacerAlgo::resultado -->
+          </sequence>
+      </complexType>
+    </element>
+  </schema>
+
+</types>
+
+<message name="HacerAlgoRequest">
+  <part name="Body" element="ns1:HacerAlgo"/><!-- ns1__HacerAlgo::ns1__HacerAlgo -->
+</message>
+
+<message name="HacerAlgoResponse">
+  <part name="Body" element="ns1:HacerAlgoResponse"/>
+</message>
+
+<portType name="ServicePortType">
+  <operation name="HacerAlgo">
+    <documentation>Service definition of function ns1__HacerAlgo</documentation>
+    <input message="tns:HacerAlgoRequest"/>
+    <output message="tns:HacerAlgoResponse"/>
+  </operation>
+</portType>
+
+<binding name="Service" type="tns:ServicePortType">
+  <SOAP:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <operation name="HacerAlgo">
+    <SOAP:operation soapAction=""/>
+    <input>
+          <SOAP:body use="literal" parts="Body"/>
+    </input>
+    <output>
+          <SOAP:body use="literal" parts="Body"/>
+    </output>
+  </operation>
+</binding>
+
+<service name="Service">
+  <documentation>gSOAP 2.8.132 generated service definition</documentation>
+  <port name="Service" binding="tns:Service">
+    <SOAP:address location="http://localhost:80"/>
+  </port>
+</service>
+
+</definitions>

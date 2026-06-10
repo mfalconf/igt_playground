@@ -17,9 +17,16 @@ int main() {
         return 1;
     }
 
-    // Registrar el callback (Función lambda) que manejará el evento detectado
+    // 1. Registrar el callback para REMOCIÓN (extracción)
     driveMonitor->SetDriveRemovedCallback([](const std::string& drivePath) {
-        std::cout << "\n[ALERTA RECIBIDA EN MAIN] Una unidad ha sido desconectada del sistema!" << std::endl;
+        std::cout << "\n[ - REMOVIDO ] Se desconectó la unidad:" << std::endl;
+        std::cout << "[DETALLE]: " << drivePath << std::endl;
+        std::cout << "-----------------------------------------" << std::endl;
+    });
+
+    // 2. Registrar el callback para INSERCIÓN
+    driveMonitor->SetDriveAddedCallback([](const std::string& drivePath) {
+        std::cout << "\n[ + INSERTADO ] Se detectó una nueva unidad:" << std::endl;
         std::cout << "[DETALLE]: " << drivePath << std::endl;
         std::cout << "-----------------------------------------" << std::endl;
     });
@@ -27,7 +34,7 @@ int main() {
     // Iniciar el monitoreo asíncrono
     std::cout << "[INFO] Activando el monitor udev..." << std::endl;
     driveMonitor->StartMonitoring();
-    std::cout << "[OK] Buscando eventos del Kernel en segundo plano..." << std::endl;
+    std::cout << "[OK] Buscando eventos del Kernel (Inserción/Extracción) en segundo plano..." << std::endl;
     std::cout << "[INFO] Presiona ENTER en cualquier momento para salir de la demo.\n" << std::endl;
 
     // Bloquear el hilo de ejecución principal esperando la interacción del usuario

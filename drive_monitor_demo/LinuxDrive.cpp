@@ -3,7 +3,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 
-LinuxDrive::LinuxDrive() : m_running(false), m_callback(nullptr) {}
+LinuxDrive::LinuxDrive() : m_running(false), m_removedCallback(nullptr), m_addedCallback(nullptr) {}
 
 LinuxDrive::~LinuxDrive() {
     StopMonitoring();
@@ -27,18 +27,23 @@ void LinuxDrive::StopMonitoring() {
 
 void LinuxDrive::SetDriveRemovedCallback(std::function<void(const std::string&)> callback) {
     std::lock_guard<std::mutex> lock(m_callbackMutex);
-    m_callback = callback;
+    m_removedCallback = callback;
+}
+
+void LinuxDrive::SetDriveAddedCallback(std::function<void(const std::string&)> callback) {
+    std::lock_guard<std::mutex> lock(m_callbackMutex);
+    m_addedCallback = callback;
 }
 
 void LinuxDrive::MonitorLoop() {
-    // 1. Inicializar el contexto general de udev
+    // Inicializar el contexto general de udev
     struct udev* udevContext = udev_new();
     if (!udevContext) {
         std::cerr << "[ERROR] No se pudo inicializar el contexto udev." << std::endl;
         return;
     }
 
-    // 2. Crear el monitor escuchando eventos 'udev' desde el Netlink del Kernel
+    // Crear el monitor escuchando eventos 'udev' desde el Netlink del Kernel
     struct udev_monitor* monitor = udev_monitor_new_from_netlink(udevContext, "udev");
     if (!monitor) {
         std::cerr << "[ERROR] No se pudo crear el monitor udev." << std::endl;
@@ -46,7 +51,7 @@ void LinuxDrive::MonitorLoop() {
         return;
     }
 
-    // 3. Filtrar solo por dispositivos de tipo de bloque (Discos, USBs, Particiones)
+    // Filtrar solo por dispositivos de tipo de bloque (Discos, USBs, Particiones)
     udev_monitor_filter_add_match_subsystem_devtype(monitor, "block", NULL);
     udev_monitor_enable_receiving(monitor);
 
@@ -71,21 +76,27 @@ void LinuxDrive::MonitorLoop() {
             if (dev) {
                 const char* action = udev_device_get_action(dev);
                 
-                // Verificar si la acción del Kernel es una remoción
-                if (action && std::string(action) == "remove") {
-                    const char* devnode = udev_device_get_devnode(dev);
-                    std::string devicePath = devnode ? devnode : "Dispositivo Desconocido";
+                if (action) {
+                    std::string actionStr(action);
+                    
+                    // Solo procesar si es "add" (inserción) o "remove" (extracción)
+                    if (actionStr == "add" || actionStr == "remove") {
+                        const char* devnode = udev_device_get_devnode(dev);
+                        std::string devicePath = devnode ? devnode : "Dispositivo Desconocido";
 
-                    // Opcional: Intentar extraer propiedades adicionales heredadas antes de la destrucción
-                    const char* devtype = udev_device_get_devtype(dev);
-                    if (devtype) {
-                        devicePath += " (" + std::string(devtype) + ")";
-                    }
+                        // Intentar extraer propiedades adicionales (como 'disk' o 'partition')
+                        const char* devtype = udev_device_get_devtype(dev);
+                        if (devtype) {
+                            devicePath += " (" + std::string(devtype) + ")";
+                        }
 
-                    // Disparar el callback de forma segura
-                    std::lock_guard<std::mutex> lock(m_callbackMutex);
-                    if (m_callback) {
-                        m_callback(devicePath);
+                        // Disparar el callback correspondiente de forma segura
+                        std::lock_guard<std::mutex> lock(m_callbackMutex);
+                        if (actionStr == "remove" && m_removedCallback) {
+                            m_removedCallback(devicePath);
+                        } else if (actionStr == "add" && m_addedCallback) {
+                            m_addedCallback(devicePath);
+                        }
                     }
                 }
                 udev_device_unref(dev);
@@ -93,7 +104,7 @@ void LinuxDrive::MonitorLoop() {
         }
     }
 
-    // 4. Limpieza ordenada de recursos al salir del bucle
+    // Limpieza ordenada de recursos al salir del bucle
     udev_monitor_unref(monitor);
     udev_unref(udevContext);
 }

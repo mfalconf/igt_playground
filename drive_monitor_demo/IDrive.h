@@ -13,6 +13,9 @@ public:
     // Detiene el hilo y libera los recursos de forma segura
     virtual void StopMonitoring() = 0;
     
-    // Registra la función callback que se ejecutará cuando se remueva un disco
+    // Callback para cuando se REMUEVE un disco
     virtual void SetDriveRemovedCallback(std::function<void(const std::string&)> callback) = 0;
+
+    // Callback para cuando se INSERTA un disco
+    virtual void SetDriveAddedCallback(std::function<void(const std::string&)> callback) = 0;
 };

@@ -18,4 +18,7 @@ echo "Instalando Spread Toolkit..."
 # 'spread' es el demonio de mensajería, libspread2-dev son las cabeceras C/C++
 sudo apt-get install -y spread libspread2-dev
 
+echo "Instalando udev..."
+sudo apt-get install -y libudev-dev
+
 echo "¡Entorno listo!"

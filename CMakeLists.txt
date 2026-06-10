@@ -12,3 +12,5 @@ add_subdirectory(sqlite)
 add_subdirectory(gsoap/demo1)
 add_subdirectory(gsoap/demo2)
 add_subdirectory(spread)
+
+add_subdirectory(drive_monitor_demo)

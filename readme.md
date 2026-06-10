@@ -265,11 +265,11 @@ Una vez regenerados, vuelve a tu carpeta `build/` y ejecuta `make` nuevamente pa
 
 ---
 
-# Linux Drive Removal Monitor Demo (WMI Port to udev)
+# Linux Drive Insertion/Removal Monitor Demo (WMI Port to udev)
 
 Este proyecto es una demostración completa e independiente que simula la portabilidad de un componente de monitoreo de almacenamiento desde Windows (WMI) hacia Linux (`libudev`). 
 
-El objetivo es capturar de forma asíncrona los eventos de extracción de unidades (Discos, Pendrives USB, etc.) utilizando mecanismos nativos del Kernel de Linux mediante un hilo en segundo plano, notificando a la aplicación principal a través de un callback.
+El objetivo es capturar de forma asíncrona los eventos de inserción y extracción de unidades (Discos, Pendrives USB, etc.) utilizando mecanismos nativos del Kernel de Linux mediante un hilo en segundo plano, notificando a la aplicación principal a través de un callback.
 
 ---
 
@@ -287,16 +287,16 @@ En Windows, la aplicación original utilizaba consultas WMI asíncronas para rec
 
 ## Probando la demo
 
-Sigue estos pasos para verificar el funcionamiento del detector asíncrono de extracción de unidades en Linux:
+Sigue estos pasos para verificar el funcionamiento del detector asíncrono de inserción/extracción de unidades en Linux:
 
 ### Paso 1: Iniciar la aplicación
 Una vez compilado el proyecto, ejecuta el binario desde tu terminal:
 ```bash
 ./drive_monitor_demo/run_drive_monitor_demo
 ```
+Al ejecutarlo, verás un mensaje indicando que el monitor está activo en segundo plano.
 
-### Paso 2: Preparar el escenario
-Al ejecutarlo, verás un mensaje indicando que el monitor está activo en segundo plano. En este momento:
+### Paso 2: Disparar el evento (Inserción)
 Conecta un Pendrive USB (o cualquier disco externo) a tu computadora.
 Espera un par de segundos para que el sistema operativo lo monte y lo reconozca.
 
@@ -307,7 +307,7 @@ Ahora, desconecta físicamente el Pendrive USB del puerto (puedes simplemente de
 Para comprobar que el hilo en segundo plano se cierra correctamente y no hay bloqueos (deadlocks), simplemente presiona la tecla ENTER.
 
 ## Resultado Esperado
-Inmediatamente al desconectar la unidad, libudev interceptará el evento del Kernel, nuestro hilo en segundo plano lo procesará y disparará el callback hacia la función principal.
+Inmediatamente al conectar/desconectar la unidad, libudev interceptará el evento del Kernel, nuestro hilo en segundo plano lo procesará y disparará el callback hacia la función principal.
 
 Deberías ver una salida en la terminal exactamente como esta:
 ```bash
@@ -315,15 +315,15 @@ Deberías ver una salida en la terminal exactamente como esta:
   Iniciando Demo de Monitoreo en LINUX   
 =========================================
 [INFO] Activando el monitor udev...
-[OK] Buscando eventos del Kernel en segundo plano...
+[OK] Buscando eventos del Kernel (Inserción/Extracción) en segundo plano...
 [INFO] Presiona ENTER en cualquier momento para salir de la demo.
 
-[ALERTA RECIBIDA EN MAIN] Una unidad ha sido desconectada del sistema!
-[DETALLE]: /dev/sdb1 (partition)
+[ + INSERTADO ] Se detectó una nueva unidad:
+[DETALLE]: /dev/sde (disk)
 -----------------------------------------
 
-[ALERTA RECIBIDA EN MAIN] Una unidad ha sido desconectada del sistema!
-[DETALLE]: /dev/sdb (disk)
+[ - REMOVIDO ] Se desconectó la unidad:
+[DETALLE]: /dev/sde (disk)
 -----------------------------------------
 
 [INFO] Deteniendo servicios de monitoreo de hardware...
@@ -331,6 +331,6 @@ Deberías ver una salida en la terminal exactamente como esta:
 ```
 
 ## Nota importante sobre el resultado:
-Es completamente normal y esperado recibir múltiples alertas al retirar un solo dispositivo físico. udev emitirá un evento "remove" independiente para cada partición lógica (por ejemplo, /dev/sdb1, /dev/sdb2) y finalmente un evento para el disco físico en sí (/dev/sdb).
+Es completamente normal y esperado recibir múltiples alertas al insertar/retirar un solo dispositivo físico. udev emitirá un evento "add"/"remove" independiente para cada partición lógica (por ejemplo, /dev/sdb1, /dev/sdb2) y finalmente un evento para el disco físico en sí (/dev/sdb).
 
 ---

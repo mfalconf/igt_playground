@@ -2,20 +2,20 @@
 #include <string>
 #include <functional>
 
-// Interfaz pura que define el comportamiento del monitor de discos
+// Pure interface defining the behavior of the drive monitor
 class IDrive {
 public:
     virtual ~IDrive() = default;
     
-    // Inicia el hilo de monitoreo en segundo plano
+    // Starts the background monitoring thread
     virtual void StartMonitoring() = 0;
     
-    // Detiene el hilo y libera los recursos de forma segura
+    // Stops the thread and releases resources safely
     virtual void StopMonitoring() = 0;
     
-    // Callback para cuando se REMUEVE un disco
+    // Callback triggered when a drive is REMOVED
     virtual void SetDriveRemovedCallback(std::function<void(const std::string&)> callback) = 0;
 
-    // Callback para cuando se INSERTA un disco
+    // Callback triggered when a drive is INSERTED
     virtual void SetDriveAddedCallback(std::function<void(const std::string&)> callback) = 0;
 };

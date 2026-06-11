@@ -36,26 +36,26 @@ void LinuxDrive::SetDriveAddedCallback(std::function<void(const std::string&)> c
 }
 
 void LinuxDrive::MonitorLoop() {
-    // Inicializar el contexto general de udev
+    // Initialize the general udev context
     struct udev* udevContext = udev_new();
     if (!udevContext) {
-        std::cerr << "[ERROR] No se pudo inicializar el contexto udev." << std::endl;
+        std::cerr << "[ERROR] Failed to initialize the udev context." << std::endl;
         return;
     }
 
-    // Crear el monitor escuchando eventos 'udev' desde el Netlink del Kernel
+    // Create the monitor listening for 'udev' events from the Kernel Netlink socket
     struct udev_monitor* monitor = udev_monitor_new_from_netlink(udevContext, "udev");
     if (!monitor) {
-        std::cerr << "[ERROR] No se pudo crear el monitor udev." << std::endl;
+        std::cerr << "[ERROR] Failed to create the udev monitor." << std::endl;
         udev_unref(udevContext);
         return;
     }
 
-    // Filtrar solo por dispositivos de tipo de bloque (Discos, USBs, Particiones)
+    // Filter only block-type devices (Disks, USBs, Partitions)
     udev_monitor_filter_add_match_subsystem_devtype(monitor, "block", NULL);
     udev_monitor_enable_receiving(monitor);
 
-    // Obtener el File Descriptor interno del socket para usarlo con select()
+    // Get the internal socket file descriptor to use with select()
     int fd = udev_monitor_get_fd(monitor);
 
     while (m_running) {
@@ -63,14 +63,14 @@ void LinuxDrive::MonitorLoop() {
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
         
-        // Timeout de 1 segundo para evitar bloqueos indefinidos si m_running cambia a false
+        // 1-second timeout to prevent indefinite blocking if m_running changes to false
         struct timeval timeout;
         timeout.tv_sec = 1;
         timeout.tv_usec = 0;
 
         int ret = select(fd + 1, &fds, NULL, NULL, &timeout);
         
-        // Si hay datos listos en el socket y m_running sigue activo
+        // If data is ready on the socket and m_running is still active
         if (ret > 0 && FD_ISSET(fd, &fds) && m_running) {
             struct udev_device* dev = udev_monitor_receive_device(monitor);
             if (dev) {
@@ -79,18 +79,18 @@ void LinuxDrive::MonitorLoop() {
                 if (action) {
                     std::string actionStr(action);
                     
-                    // Solo procesar si es "add" (inserción) o "remove" (extracción)
+                    // Only process "add" (insertion) or "remove" (extraction) events
                     if (actionStr == "add" || actionStr == "remove") {
                         const char* devnode = udev_device_get_devnode(dev);
-                        std::string devicePath = devnode ? devnode : "Dispositivo Desconocido";
+                        std::string devicePath = devnode ? devnode : "Unknown Device";
 
-                        // Intentar extraer propiedades adicionales (como 'disk' o 'partition')
+                        // Try to extract additional properties (e.g., 'disk' or 'partition')
                         const char* devtype = udev_device_get_devtype(dev);
                         if (devtype) {
                             devicePath += " (" + std::string(devtype) + ")";
                         }
 
-                        // Disparar el callback correspondiente de forma segura
+                        // Fire the corresponding callback in a thread-safe manner
                         std::lock_guard<std::mutex> lock(m_callbackMutex);
                         if (actionStr == "remove" && m_removedCallback) {
                             m_removedCallback(devicePath);
@@ -104,7 +104,7 @@ void LinuxDrive::MonitorLoop() {
         }
     }
 
-    // Limpieza ordenada de recursos al salir del bucle
+    // Orderly cleanup of resources when exiting the loop
     udev_monitor_unref(monitor);
     udev_unref(udevContext);
 }

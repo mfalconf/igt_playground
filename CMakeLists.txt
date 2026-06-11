@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 project(LibreriasPruebas VERSION 1.0 LANGUAGES CXX C)
 
-# Configuración global: Usar C++17
+# Global configuration: Use C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Indicarle a CMake que procese las siguientes carpetas
+# Instruct CMake to process the following folders
 add_subdirectory(poco/demo1)
 add_subdirectory(poco/demo2)
 add_subdirectory(sqlite)

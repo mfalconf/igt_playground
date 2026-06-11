@@ -1,11 +1,4 @@
-#cmake_minimum_required(VERSION 3.10)
-#project(DriveMonitorDemo CXX)
-
-# Forzar el estándar C++11 o superior para soporte nativo de hilos y lambdas
-#set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Configurar el ejecutable
+# Configure the executable
 add_executable(run_drive_monitor_demo 
     main.cpp 
     LinuxDrive.cpp 
@@ -14,8 +7,8 @@ add_executable(run_drive_monitor_demo
     BootstrapObjectFactory.h
 )
 
-# Buscar y enlazar la librería libudev del sistema operativo
+# Find and link the operating system's libudev library
 find_library(UDEV_LIB udev REQUIRED)
 
-# Enlazar la librería udev y soporte de hilos POSIX (pthread)
+# Link the udev library and POSIX threads support (pthread)
 target_link_libraries(run_drive_monitor_demo ${UDEV_LIB} pthread)

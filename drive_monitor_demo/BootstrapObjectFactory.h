@@ -4,7 +4,7 @@
 #if defined(__linux__)
 #include "LinuxDrive.h"
 #elif defined(_WIN32)
-#include "WindowsDrive.h" // Tu clase WMI original
+#include "WindowsDrive.h" // Your original WMI class
 #endif
 
 class BootstrapObjectFactory {
@@ -13,10 +13,9 @@ public:
 #if defined(__linux__)
         return new LinuxDrive();
 #elif defined(_WIN32)
-        // Aquí iría el retorno de la implementación clásica de Windows (WMI)
-        #error "Plataforma no soportada en esta demo"
+        // Here would go the return of the classic Windows implementation (WMI)
+        #error "Platform not supported in this demo"
         return nullptr;
 #endif
     }
 };
-

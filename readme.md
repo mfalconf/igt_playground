@@ -3,57 +3,57 @@
 
 # 🚀 C++ Libraries Playground
 
-Este repositorio contiene una colección de pruebas de concepto y proyectos de demostración ("demos") para aprender y experimentar con varias bibliotecas populares de C++ en un entorno moderno (C++17), asi como tambien algunas demos de funcionalidades especificas en linux.
+This repository contains a collection of proof-of-concept projects and demonstration programs ("demos") for learning and experimenting with various popular C++ libraries in a modern environment (C++17), as well as some demos of Linux-specific functionality.
 
-El proyecto está gestionado con **CMake** y está dividido en múltiples submódulos independientes que abordan desde bases de datos locales y APIs REST, hasta mensajería de red y servicios web SOAP.
+The project is managed with **CMake** and is divided into multiple independent submodules covering local databases, REST APIs, network messaging, and SOAP web services.
 
 ---
 
-## 📂 Árbol de Directorios
+## 📂 Directory Tree
 
-El repositorio está organizado de la siguiente manera para facilitar su estudio:
+The repository is organized as follows:
 
 ```text
 playground/
-├── CMakeLists.txt              # Configuración global de CMake para compilar todo el proyecto.
-├── installer.sh                # Script para instalar dependencias base (POCO, SQLite, gSOAP, etc.).
-├── spread_installer.sh         # Script para descargar, compilar e instalar Spread Toolkit.
+├── CMakeLists.txt              # Global CMake configuration to build the entire project.
+├── installer.sh                # Script to install base dependencies (POCO, SQLite, gSOAP, etc.).
+├── spread_installer.sh         # Script to download, build, and install the Spread Toolkit.
 │
-├── sqlite/                     # 1. Ejemplos de SQLite
+├── sqlite/                     # 1. SQLite examples
 │   ├── CMakeLists.txt
-│   ├── main.cpp                # Ejemplo básico: Creación de BD y tablas.
-│   └── sqlite_avanzado.cpp     # Ejemplo avanzado: CRUD y Sentencias Preparadas (Prepared Statements).
+│   ├── main.cpp                # Basic example: Database and table creation.
+│   └── sqlite_avanzado.cpp     # Advanced example: CRUD and Prepared Statements.
 │
-├── spread/                     # 2. Ejemplos de mensajería con Spread Toolkit
+├── spread/                     # 2. Messaging examples with Spread Toolkit
 │   ├── CMakeLists.txt
-│   ├── main.cpp                # Ejemplo básico: Conexión al demonio y unirse a un grupo.
-│   └── spread_avanzado.cpp     # Ejemplo avanzado: Multicast y bucle de recepción asíncrona.
+│   ├── main.cpp                # Basic example: Connect to the daemon and join a group.
+│   └── spread_avanzado.cpp     # Advanced example: Multicast and async receive loop.
 │
-├── poco/                       # 3. Ejemplos de POCO C++ Libraries
-│   ├── demo1/                  # Cliente y Servidor HTTP simples
+├── poco/                       # 3. POCO C++ Libraries examples
+│   ├── demo1/                  # Simple HTTP Client and Server
 │   │   ├── CMakeLists.txt
 │   │   ├── client.cpp
 │   │   └── server.cpp
-│   └── demo2/                  # Servidor API REST conectado a SQLite
+│   └── demo2/                  # REST API Server connected to SQLite
 │       ├── CMakeLists.txt
 │       └── main.cpp
 │
-├── gsoap/                      # 4. Ejemplos de Web Services SOAP/XML con gSOAP
-│   ├── demo1/                  # Servicio SOAP básico
+├── gsoap/                      # 4. SOAP/XML Web Services examples with gSOAP
+│   ├── demo1/                  # Basic SOAP service
 │   │   ├── CMakeLists.txt
-│   │   ├── client.cpp          # Cliente que consume el servicio.
-│   │   ├── server.cpp          # Servidor SOAP.
-│   │   ├── service.h           # Header del contrato inicial.
-│   │   ├── ns1.wsdl            # Contrato WSDL.
-│   │   └── soap*               # Clases y stubs autogenerados por gSOAP.
+│   │   ├── client.cpp          # Client that consumes the service.
+│   │   ├── server.cpp          # SOAP Server.
+│   │   ├── service.h           # Initial contract header.
+│   │   ├── ns1.wsdl            # WSDL contract.
+│   │   └── soap*               # Auto-generated classes and stubs by gSOAP.
 │   │
-│   └── demo2/                  # Juego de Blackjack distribuido
+│   └── demo2/                  # Distributed Blackjack game
 │       ├── CMakeLists.txt
-│       ├── blackjack.wsdl      # Contrato WSDL principal del casino.
-│       ├── typemap.dat         # Mapeo de tipos de datos para C++.
-│       ├── casino_server.cpp   # Aplicación del servidor (Crupier).
-│       ├── jugador_client.cpp  # Aplicación del cliente (Jugador).
-│       └── soap*               # Clases (Proxy/Service) autogeneradas pre-incluidas.
+│       ├── blackjack.wsdl      # Main WSDL contract for the casino.
+│       ├── typemap.dat         # Data type mapping for C++.
+│       ├── casino_server.cpp   # Server application (Dealer).
+│       ├── jugador_client.cpp  # Client application (Player).
+│       └── soap*               # Pre-included auto-generated classes (Proxy/Service).
 │
 └── drive_monitor_demo/
     ├── CMakeLists.txt
@@ -66,90 +66,89 @@ playground/
 
 ---
 
-## 📦 Estructura del Proyecto y Arquitectura
+## 📦 Project Structure and Architecture
 
-A continuación se detallan los módulos incluidos, cómo interactúan sus componentes y cómo probarlos de forma individual.
+The following sections detail each module, how its components interact, and how to test them individually.
 
 ### 1. SQLite (`/sqlite`)
 
-Demuestra cómo interactuar con bases de datos locales SQLite directamente desde C++.
+Demonstrates how to interact with local SQLite databases directly from C++.
 
 ```mermaid
 graph LR
-    A[Aplicación C++] -->|Sentencias SQL| B(Biblioteca SQLite3)
-    B -->|Lee / Escribe| C[(Archivo .db)]
+    A[C++ Application] -->|SQL Statements| B(SQLite3 Library)
+    B -->|Read / Write| C[(File .db)]
 
 ```
 
-* **Ejemplo Básico (`run_sqlite`)**: Conexión a la base de datos y creación de tablas simples mediante consultas directas.
-* **Ejemplo Avanzado (`run_sqlite_advanced`)**: Operaciones CRUD estructuradas y lectura de datos utilizando sentencias preparadas (*Prepared Statements*) para mayor seguridad.
+* **Basic Example (`run_sqlite`)**: Connect to the database and create simple tables using direct queries.
+* **Advanced Example (`run_sqlite_advanced`)**: Structured CRUD operations and data retrieval using *Prepared Statements* for increased security.
 
 ### 2. Spread Toolkit (`/spread`)
 
-Ejemplos de sistemas de mensajería distribuida y comunicación en grupo en red de área local usando el demonio Spread.
+Examples of distributed messaging systems and group communication over a local area network using the Spread daemon.
 
 ```mermaid
 graph TD
-    A[Cliente C++ 1] <-->|Conexión TCP| D((Demonio Spread local/remoto))
-    B[Cliente C++ 2] <-->|Conexión TCP| D
-    C[Cliente C++ 3] <-->|Conexión TCP| D
-    D -.->|Multicast/Garantías| A
-    D -.->|Multicast/Garantías| B
-    D -.->|Multicast/Garantías| C
+    A[C++ Client 1] <-->|TCP Connection| D((Local/Remote Spread Daemon))
+    B[C++ Client 2] <-->|TCP Connection| D
+    C[C++ Client 3] <-->|TCP Connection| D
+    D -.->|Multicast/Guarantees| A
+    D -.->|Multicast/Guarantees| B
+    D -.->|Multicast/Guarantees| C
 
 ```
 
-* **Ejemplo Básico (`run_spread`)**: Conexión al demonio local de Spread y unión a grupos públicos.
-* **Ejemplo Avanzado (`run_spread_advanced`)**: Envío de mensajes *Multicast* con garantía `AGREED_MESS` y un bucle de recepción asíncrono para escuchar mensajes regulares y alertas de membresía.
+* **Basic Example (`run_spread`)**: Connect to the local Spread daemon and join public groups.
+* **Advanced Example (`run_spread_advanced`)**: Send *Multicast* messages with `AGREED_MESS` guarantee and an asynchronous receive loop to listen for regular messages and membership alerts.
 
 ### 3. POCO C++ Libraries (`/poco`)
 
-Demostraciones del uso de POCO para el desarrollo rápido de aplicaciones de red.
+Demonstrations of using POCO for rapid networked application development.
 
 ```mermaid
 graph LR
-    A[Cliente HTTP / cURL / Navegador] -->|Petición GET/POST| B[Servidor HTTP POCO]
-    B -->|Consulta / Inserta| C[(SQLite: produccion.db)]
-    B -.->|Respuesta JSON| A
+    A[HTTP Client / cURL / Browser] -->|GET/POST Request| B[POCO HTTP Server]
+    B -->|Query / Insert| C[(SQLite: produccion.db)]
+    B -.->|JSON Response| A
 
 ```
 
-* **Demo 1 (`run_poco_server` y `run_poco_client`)**: Un servidor HTTP sencillo que responde con JSON y un cliente C++ para consumir dicho endpoint.
-* **Demo 2 (`api_poco_server`)**: Un Servidor de API REST completo que implementa peticiones `GET` y `POST`. Mapea estructuras de dominio a una base de datos SQLite persistente (`produccion.db`).
+* **Demo 1 (`run_poco_server` and `run_poco_client`)**: A simple HTTP server that responds with JSON and a C++ client to consume that endpoint.
+* **Demo 2 (`api_poco_server`)**: A full REST API Server implementing `GET` and `POST` requests. Maps domain structures to a persistent SQLite database (`produccion.db`).
 
 ### 4. gSOAP (`/gsoap`)
 
-Desarrollo de Servicios Web XML y SOAP, abordando contratos WSDL.
+Development of XML/SOAP Web Services addressing WSDL contracts.
 
 ```mermaid
 graph LR
-    A[Proxy gSOAP C++] -->|Serialización a XML/SOAP| B((Red HTTP:8080))
-    B -->|Deserialización XML/SOAP| C[Servicio gSOAP C++]
-    C -.->|Respuesta XML/SOAP| B
-    B -.->|Datos nativos C++| A
+    A[gSOAP C++ Proxy] -->|XML/SOAP Serialization| B((HTTP:8080 Network))
+    B -->|XML/SOAP Deserialization| C[gSOAP C++ Service]
+    C -.->|XML/SOAP Response| B
+    B -.->|Native C++ Data| A
 
 ```
 
-* **Demo 1**: Implementación de un cliente (`run_gsoap_client`) y un servidor SOAP (`run_gsoap_server`) básico para una función remota de prueba (`HacerAlgo`).
-* **Demo 2 (Blackjack)**: Un juego distribuido compuesto por un servidor de casino (`casino_server`) y un cliente jugador (`jugador_client`), definidos mediante `blackjack.wsdl`.
+* **Demo 1**: Implementation of a client (`run_gsoap_client`) and a basic SOAP server (`run_gsoap_server`) for a remote test function (`HacerAlgo`).
+* **Demo 2 (Blackjack)**: A distributed game composed of a casino server (`casino_server`) and a player client (`jugador_client`), defined via `blackjack.wsdl`.
 
 ---
 
-## 🛠️ Instalación y Compilación General
+## 🛠️ General Installation and Build
 
-Para compilar todo el proyecto, necesitas un entorno Linux (Ubuntu/Debian recomendado).
+To build the entire project, you need a Linux environment (Ubuntu/Debian recommended).
 
-1. **Instalar Dependencias**:
-Ejecuta los scripts incluidos para instalar herramientas de compilación, SQLite, POCO, gSOAP y compilar Spread Toolkit desde su código fuente.
-
+1. **Install Dependencies**:
+Run the included scripts to install build tools, SQLite, POCO, gSOAP, and compile the Spread Toolkit from source.
 
 ```bash
 chmod +x installer.sh spread_installer.sh
 ./installer.sh
 ./spread_installer.sh
 ```
-2. **Compilar el Proyecto**:
-Desde la raíz del repositorio (`igt_mforce/playground/`), usa CMake[cite: 1]:
+2. **Build the Project**:
+From the repository root (`igt_mforce/playground/`), use CMake:
 ```bash
 mkdir build
 cd build
@@ -157,180 +156,255 @@ cmake ..
 make
 ```
 
-*Esto generará todos los ejecutables dentro de sus respectivas subcarpetas en `build/`.*
+*This will generate all executables inside their respective subfolders under `build/`.*
 
 ---
 
-## 🧪 Cómo Probar Cada Ejemplo Detalladamente
+## 🧪 How to Test Each Example in Detail
 
-> **Nota:** Todos los comandos asumen que estás posicionado dentro de la carpeta `build/` después de haber ejecutado `make`.
+> **Note:** All commands assume you are inside the `build/` folder after running `make`.
 
-### Probando SQLite
+### Testing SQLite
 
-No requiere servicios externos. Ejecuta los binarios directamente:
+No external services required. Run the binaries directly:
 
 ```bash
 ./sqlite/run_sqlite
 ./sqlite/run_sqlite_advanced
 ```
 
-* **Qué esperar**: Verás mensajes en consola indicando que la base de datos se abrió correctamente, y en el caso avanzado, se imprimirán en pantalla los registros insertados (ej. `Carlos, 35`). Notarás que se han creado archivos `.db` en tu directorio actual.
+* **What to expect**: You will see console messages indicating the database opened successfully, and in the advanced case, inserted records will be printed (e.g., `Carlos, 35`). You will notice `.db` files have been created in your current directory.
 
-### Probando Spread Toolkit
+### Testing Spread Toolkit
 
-**Importante:** Para que las aplicaciones de Spread funcionen, el *demonio* de Spread debe estar corriendo en tu máquina de fondo.
+**Important:** For Spread applications to work, the Spread *daemon* must be running in the background.
 
-1. Abre una terminal y arranca el demonio de Spread:
+1. Open a terminal and start the Spread daemon:
 ```bash
 spread
 ```
-2. En una segunda terminal, ejecuta el nodo avanzado (que se quedará escuchando):
+2. In a second terminal, run the advanced node (which will stay listening):
 ```bash
 ./spread/run_spread_advanced
 ```
 
-3. En una tercera terminal, ejecuta el nodo básico para que se una a un grupo y veas cómo reacciona el nodo avanzado ante la entrada de nuevos miembros:
+3. In a third terminal, run the basic node to join a group and observe how the advanced node reacts to new member arrivals:
 ```bash
 ./spread/run_spread
 ```
 
-### Probando POCO C++
-**Demo 1 (Servidor y Cliente Básicos)**
-1. Inicia el servidor (puerto 8081):
+### Testing POCO C++
+**Demo 1 (Basic Server and Client)**
+1. Start the server (port 8081):
 ```bash
 ./poco/demo1/run_poco_server
 ```
 
-2. En otra terminal, ejecuta el cliente para ver la respuesta JSON:
+2. In another terminal, run the client to see the JSON response:
 ```bash
 ./poco/demo1/run_poco_client
 ```
 
-**Demo 2 (API REST con Base de Datos)**
-1. Inicia el servidor REST (puerto 8080):
+**Demo 2 (REST API with Database)**
+1. Start the REST server (port 8080):
 ```bash
 ./poco/demo2/api_poco_server
 ```
 
-2. Usa `curl` (o Postman) en otra terminal para interactuar con la API:
-* **Obtener usuario (GET)**:
+2. Use `curl` (or Postman) in another terminal to interact with the API:
+* **Get user (GET)**:
 ```bash
 curl -X GET "http://localhost:8080/api/users?id=1"
 ```
 
-* **Crear usuario (POST)**:
+* **Create user (POST)**:
 ```bash
 curl -X POST "http://localhost:8080/api/users" -H "Content-Type: application/json" -d '{"name": "Ada Lovelace", "username": "adal", "email": "ada@computing.com"}'
 ```
 
-### Probando gSOAP (Blackjack)
+### Testing gSOAP (Blackjack)
 
-1. En una terminal, levanta el servidor del casino:
+1. In one terminal, start the casino server:
 ```bash
 ./gsoap/demo2/casino_server
 ```
-2. En otra terminal, ejecuta el cliente del jugador:
+2. In another terminal, run the player client:
 ```bash
 ./gsoap/demo2/jugador_client
 ```
 
-* **Qué esperar**: El cliente imprimirá "Pidiendo carta al crupier...". El servidor del casino registrará la petición del `id_partida: 777` y enviará un "As de Picas". El cliente recibirá la respuesta y la mostrará por pantalla.
+* **What to expect**: The client will print "Pidiendo carta al crupier...". The casino server will log the request for `id_partida: 777` and send an "As de Picas". The client will receive the response and display it on screen.
 
 ---
 
-## ⚠️ Aclaración sobre el Código de gSOAP
+## ⚠️ Clarification on the gSOAP Code
 
-En el directorio de los ejemplos de gSOAP (especialmente en `demo2`), verás muchos archivos como `soapStub.h`, `soapC.cpp`, `soapBlackjackBindingProxy.cpp`, etc.
+In the gSOAP examples directory (especially `demo2`), you will see many files such as `soapStub.h`, `soapC.cpp`, `soapBlackjackBindingProxy.cpp`, etc.
 
-**NO necesitas regenerar estos archivos para ejecutar el proyecto.** Ya han sido pre-generados e incluidos en el repositorio para facilitar la compilación. El proyecto compilará directamente con `cmake` y `make`.
+**You do NOT need to regenerate these files to run the project.** They have already been pre-generated and included in the repository to simplify compilation. The project will compile directly with `cmake` and `make`.
 
-### ¿Qué hacer si modificas el contrato (`blackjack.wsdl`)?
+### What to do if you modify the contract (`blackjack.wsdl`)?
 
-Si en el futuro decides cambiar la arquitectura del servicio web (por ejemplo, agregar nuevas funciones o parámetros al XML/WSDL), **entonces sí** deberás regenerar el código intermedio de C++.
+If you decide to change the web service architecture in the future (e.g., adding new functions or parameters to the XML/WSDL), **then you will** need to regenerate the intermediate C++ code.
 
-Los pasos para hacerlo (desde la carpeta de código fuente `gsoap/demo2`) son:
+The steps to do so (from the source folder `gsoap/demo2`) are:
 
-1. **Generar la cabecera C++ a partir del WSDL** (usando las reglas de `typemap.dat`):
+1. **Generate the C++ header from the WSDL** (using the `typemap.dat` rules):
 ```bash
 wsdl2h -t typemap.dat -o blackjack.h blackjack.wsdl
 ```
-2. **Generar los *Stubs*, *Proxies* y esqueletos de *Servicio***:
+2. **Generate the *Stubs*, *Proxies*, and *Service* skeletons**:
 ```bash
 soapcpp2 -j blackjack.h
 ```
 
-*(El flag `-j` genera las clases C++ orientadas a objetos como `BlackjackBindingProxy` y `BlackjackBindingService`)*.
+*(The `-j` flag generates object-oriented C++ classes such as `BlackjackBindingProxy` and `BlackjackBindingService`)*.
 
-Una vez regenerados, vuelve a tu carpeta `build/` y ejecuta `make` nuevamente para compilar los cambios.
+Once regenerated, go back to your `build/` folder and run `make` again to compile the changes.
 
 ---
 
 # Linux Drive Insertion/Removal Monitor Demo (WMI Port to udev)
 
-Este proyecto es una demostración completa e independiente que simula la portabilidad de un componente de monitoreo de almacenamiento desde Windows (WMI) hacia Linux (`libudev`). 
+This project is a complete, standalone demonstration that simulates porting a storage monitoring component from Windows (WMI) to Linux (`libudev`).
 
-El objetivo es capturar de forma asíncrona los eventos de inserción y extracción de unidades (Discos, Pendrives USB, etc.) utilizando mecanismos nativos del Kernel de Linux mediante un hilo en segundo plano, notificando a la aplicación principal a través de un callback.
+The goal is to asynchronously capture insertion and removal events for drives (Disks, USB Pendrives, etc.) using native Linux Kernel mechanisms via a background thread, notifying the main application through a callback.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
-En Windows, WMI (Windows Management Instrumentation) es el estándar para suscribirse a eventos del sistema como la desconexión de hardware (usando consultas como __InstanceDeletionEvent sobre Win32_DiskDrive).
+## 🏗️ System Architecture
 
-En Linux, el equivalente nativo y más eficiente para manejar eventos de hardware (hotplugging/unplugging) a nivel de sistema es udev (específicamente a través de la librería libudev).
+On Windows, WMI (Windows Management Instrumentation) is the standard for subscribing to system events such as hardware disconnection (using queries like `__InstanceDeletionEvent` over `Win32_DiskDrive`).
 
-En Windows, la aplicación original utilizaba consultas WMI asíncronas para recibir alertas de cambios de hardware. En Linux, hemos replicado este comportamiento con la siguiente estructura:
+On Linux, the native and most efficient equivalent for handling hardware events (hotplugging/unplugging) at the system level is `udev` (specifically through the `libudev` library).
 
-1. **`IDrive` (Interfaz)**: Define el contrato agnóstico de la plataforma para iniciar/detener el monitoreo y registrar eventos.
-2. **`LinuxDrive` (Implementación)**: Utiliza `libudev` para abrir un socket Netlink con el Kernel, filtrando eventos del subsistema `"block"`. Implementa un bucle `select()` con *timeout* para evitar bloqueos y permitir una finalización segura del hilo.
-3. **`BootstrapObjectFactory` (Fábrica)**: Abstrae la instanciación de la clase correcta dependiendo de la plataforma de compilación.
-4. **`main.cpp` (Demo)**: Configura el monitor, registra una función lambda como callback y mantiene viva la ejecución hasta que el usuario decida salir.
+The original Windows application used asynchronous WMI queries to receive hardware change alerts. On Linux, this behavior has been replicated with the following structure:
 
-## Probando la demo
+1. **`IDrive` (Interface)**: Defines the platform-agnostic contract for starting/stopping monitoring and registering events.
+2. **`LinuxDrive` (Implementation)**: Uses `libudev` to open a Netlink socket with the Kernel, filtering events from the `"block"` subsystem. Implements a `select()` loop with a *timeout* to avoid blocking and allow safe thread termination.
+3. **`BootstrapObjectFactory` (Factory)**: Abstracts the instantiation of the correct class depending on the compilation platform.
+4. **`main.cpp` (Demo)**: Configures the monitor, registers a lambda function as a callback, and keeps execution alive until the user decides to exit.
 
-Sigue estos pasos para verificar el funcionamiento del detector asíncrono de inserción/extracción de unidades en Linux:
+---
 
-### Paso 1: Iniciar la aplicación
-Una vez compilado el proyecto, ejecuta el binario desde tu terminal:
+## 🪟 Prerequisites for WSL2 Users: Setting up usbipd-win
+
+> **This section only applies if you are running this demo inside Ubuntu on WSL2.**
+>
+> The Linux kernel inside WSL2 does not receive USB hardware hotplug events by default. You must forward the USB device from Windows into WSL2 using **usbipd-win**. Complete these steps **before** running the demo.
+
+### Step A — Install usbipd-win on Windows *(one-time setup)*
+
+1. Open **PowerShell** or **Windows Terminal** as Administrator.
+2. Install via `winget`:
+   ```powershell
+   winget install --interactive --exact dorssel.usbipd-win
+   ```
+   Alternatively, download the `.msi` installer directly from the
+   [usbipd-win GitHub Releases](https://github.com/dorssel/usbipd-win/releases).
+3. **Restart Windows** if prompted by the installer.
+
+### Step B — Install usbip client tools inside WSL2 Ubuntu *(one-time setup)*
+
+Open your WSL2 Ubuntu terminal and run:
+
+```bash
+sudo apt update && sudo apt install linux-tools-generic hwdata
+sudo update-alternatives --install /usr/local/bin/usbip usbip \
+    /usr/lib/linux-tools/*-generic/usbip 20
+```
+
+### Step C — Attach the USB pendrive (Windows → WSL2)
+
+1. On **Windows** (PowerShell as Administrator), list available USB devices:
+   ```powershell
+   usbipd list
+   ```
+   Identify the `BUSID` of your pendrive (e.g., `2-4`).
+
+2. **Bind** the device (one-time per device — makes it shareable):
+   ```powershell
+   usbipd bind --busid 2-4
+   ```
+
+3. **Attach** to WSL2 (run this **while the demo is already running** to trigger the insertion event):
+   ```powershell
+   usbipd attach --wsl --busid 2-4
+   ```
+   The device now appears inside WSL2 (e.g., `/dev/sdb`). `udev` fires an `add` event and the demo prints it immediately.
+
+4. Verify inside WSL2 that the device is visible:
+   ```bash
+   lsblk
+   # or check kernel messages
+   dmesg | tail -20
+   ```
+
+### Step D — Detach the USB pendrive (WSL2 → Windows)
+
+1. On **Windows** (PowerShell as Administrator), run **while the demo is running** to trigger the removal event:
+   ```powershell
+   usbipd detach --busid 2-4
+   ```
+   `udev` fires a `remove` event inside WSL2 and the demo prints it immediately.
+
+2. Optionally **unbind** the device (stops it from being shareable until bound again):
+   ```powershell
+   usbipd unbind --busid 2-4
+   ```
+
+---
+
+## Testing the demo
+
+Follow these steps to verify the asynchronous insertion/removal detector on Linux:
+
+### Step 1: Start the application
+Once the project is compiled, run the binary from your terminal:
 ```bash
 ./drive_monitor_demo/run_drive_monitor_demo
 ```
-Al ejecutarlo, verás un mensaje indicando que el monitor está activo en segundo plano.
+You will see a message indicating the monitor is active in the background.
 
-### Paso 2: Disparar el evento (Inserción)
-Conecta un Pendrive USB (o cualquier disco externo) a tu computadora.
-Espera un par de segundos para que el sistema operativo lo monte y lo reconozca.
+### Step 2: Trigger the event (Insertion)
+Connect a USB Pendrive (or any external disk) to your computer.
+Wait a couple of seconds for the OS to mount and recognize it.
 
-### Paso 3: Disparar el evento (Extracción)
-Ahora, desconecta físicamente el Pendrive USB del puerto (puedes simplemente desenchufarlo).
+> **On WSL2**: use `usbipd attach --wsl --busid <BUSID>` from Windows PowerShell instead of physically plugging in a device. See the [Prerequisites for WSL2 Users](#-prerequisites-for-wsl2-users-setting-up-usbipd-win) section above.
 
-### Paso 4: Finalizar la ejecución de forma segura
-Para comprobar que el hilo en segundo plano se cierra correctamente y no hay bloqueos (deadlocks), simplemente presiona la tecla ENTER.
+### Step 3: Trigger the event (Removal)
+Physically unplug the USB Pendrive from the port.
 
-## Resultado Esperado
-Inmediatamente al conectar/desconectar la unidad, libudev interceptará el evento del Kernel, nuestro hilo en segundo plano lo procesará y disparará el callback hacia la función principal.
+> **On WSL2**: use `usbipd detach --busid <BUSID>` from Windows PowerShell instead.
 
-Deberías ver una salida en la terminal exactamente como esta:
+### Step 4: Exit gracefully
+To verify the background thread closes correctly without deadlocks, simply press ENTER.
+
+## Expected Result
+Immediately upon connecting/disconnecting the drive, `libudev` intercepts the Kernel event, the background thread processes it, and fires the callback to the main function.
+
+You should see output in the terminal exactly like this:
 ```bash
 =========================================
-  Iniciando Demo de Monitoreo en LINUX   
+    Linux Drive Monitor Demo Starting    
 =========================================
-[INFO] Activando el monitor udev...
-[OK] Buscando eventos del Kernel (Inserción/Extracción) en segundo plano...
-[INFO] Presiona ENTER en cualquier momento para salir de la demo.
+[INFO] Activating udev monitor...
+[OK] Listening for Kernel events (Insertion/Removal) in the background...
+[INFO] Press ENTER at any time to exit the demo.
 
-[ + INSERTADO ] Se detectó una nueva unidad:
-[DETALLE]: /dev/sde (disk)
+[ + INSERTED ] New drive detected:
+[DETAIL]: /dev/sde (disk)
 -----------------------------------------
 
-[ - REMOVIDO ] Se desconectó la unidad:
-[DETALLE]: /dev/sde (disk)
+[ - REMOVED ] Drive disconnected:
+[DETAIL]: /dev/sde (disk)
 -----------------------------------------
 
-[INFO] Deteniendo servicios de monitoreo de hardware...
-[OK] Demo finalizada con éxito.
+[INFO] Stopping hardware monitoring services...
+[OK] Demo finished successfully.
 ```
 
-## Nota importante sobre el resultado:
-Es completamente normal y esperado recibir múltiples alertas al insertar/retirar un solo dispositivo físico. udev emitirá un evento "add"/"remove" independiente para cada partición lógica (por ejemplo, /dev/sdb1, /dev/sdb2) y finalmente un evento para el disco físico en sí (/dev/sdb).
+## Important note about the output:
+It is completely normal and expected to receive multiple alerts when inserting/removing a single physical device. `udev` will emit an independent `"add"`/`"remove"` event for each logical partition (e.g., `/dev/sdb1`, `/dev/sdb2`) and finally an event for the physical disk itself (`/dev/sdb`).
 
 ---

@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Instruct CMake to process the following folders
 add_subdirectory(poco/demo1)
 add_subdirectory(poco/demo2)
+add_subdirectory(poco/demo_plugin)
 add_subdirectory(sqlite)
 add_subdirectory(gsoap/demo1)
 add_subdirectory(gsoap/demo2)

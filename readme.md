@@ -34,9 +34,14 @@ playground/
 │   │   ├── CMakeLists.txt
 │   │   ├── client.cpp
 │   │   └── server.cpp
-│   └── demo2/                  # REST API Server connected to SQLite
-│       ├── CMakeLists.txt
-│       └── main.cpp
+│   ├── demo2/                  # REST API Server connected to SQLite
+│   │   ├── CMakeLists.txt
+│   │   └── main.cpp
+│   └── demo_plugin/            # POCO ClassLoader plugin system demo
+│       ├── include/...
+│       ├── src/...
+│       ├── demo_app/...
+│       └── tests/
 │
 ├── gsoap/                      # 4. SOAP/XML Web Services examples with gSOAP
 │   ├── demo1/                  # Basic SOAP service
@@ -116,6 +121,7 @@ graph LR
 
 * **Demo 1 (`run_poco_server` and `run_poco_client`)**: A simple HTTP server that responds with JSON and a C++ client to consume that endpoint.
 * **Demo 2 (`api_poco_server`)**: A full REST API Server implementing `GET` and `POST` requests. Maps domain structures to a persistent SQLite database (`produccion.db`).
+* **Demo 3 — Plugin System (`demo_plugin`)**: Demonstrates how to build a POCO plugin using the Manifest macros and load it at runtime with `Poco::ClassLoader<T>`. See the [dedicated section below](#-poco-demo_plugin--runtime-plugin-system) for full details.
 
 ### 4. gSOAP (`/gsoap`)
 
@@ -406,5 +412,79 @@ You should see output in the terminal exactly like this:
 
 ## Important note about the output:
 It is completely normal and expected to receive multiple alerts when inserting/removing a single physical device. `udev` will emit an independent `"add"`/`"remove"` event for each logical partition (e.g., `/dev/sdb1`, `/dev/sdb2`) and finally an event for the physical disk itself (`/dev/sdb`).
+
+---
+
+# 🔌 POCO demo_plugin — Runtime Plugin System
+
+This demo shows how to create a POCO plugin using the Manifest macros and load it at runtime with `Poco::ClassLoader<T>`.
+
+## Overview
+
+| Component | Description |
+|---|---|
+| `poco/demo_plugin/` | Shared library implementing `demo_plugin::Greeter` |
+| `poco/demo_plugin/demo_app/` | Executable that loads the plugin by absolute path and calls `greet("World")` |
+| `poco/demo_plugin/tests/` | GoogleTest-based unit tests that load the plugin and verify behavior |
+
+```mermaid
+graph LR
+    A[demo_app / tests] -->|loadLibrary| B(Poco::ClassLoader)
+    B -->|dlopen| C[libdemo_plugin.so]
+    C -->|create| D[HelloGreeter instance]
+    D -->|greet| A
+```
+
+## Prerequisites
+
+- CMake >= 3.14
+- C++17 toolchain (g++, clang, MSVC)
+- POCO libraries installed or built. If POCO is under a custom prefix, set `-DPOCO_DIR` when configuring CMake.
+- GoogleTest (system package recommended for offline environments):
+  ```bash
+  chmod +x gtest_installer.sh
+  ./gtest_installer.sh
+  ```
+  Otherwise CMake will attempt to download it via `FetchContent` (requires network access during configure).
+
+## Build
+
+```bash
+mkdir -p build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug   # add -DPOCO_DIR=/path/to/poco if needed
+cmake --build . -- -j$(nproc)
+```
+
+## Running the tests
+
+From the `build/` directory:
+
+```bash
+ctest --output-on-failure -R PluginTest
+```
+
+CTest passes the absolute path to the built plugin automatically via the CMake generator expression `$<TARGET_FILE:demo_plugin>`.
+
+## Running the demo app manually
+
+```bash
+# From build/
+./poco/demo_plugin/demo_app/demo_plugin_app $(pwd)/poco/demo_plugin/libdemo_plugin.so
+```
+
+On macOS use `.dylib`, on Windows `.dll`.
+
+## Troubleshooting
+
+| Issue | Resolution |
+|---|---|
+| FetchContent fails at configure time | Install GoogleTest via your package manager (see Prerequisites) |
+| `Poco::ClassLoader` fails to load library | Run `ldd <plugin-path>` (Linux) or `otool -L` (macOS) to inspect missing dependencies |
+| Symbol lookup errors | Ensure the plugin and host are compiled with the same C++ runtime/ABI and the same POCO linkage |
+
+## FAQ
+
+**Q: Why load by absolute path instead of by name?**  
+A: Loading by absolute path avoids `LD_LIBRARY_PATH`/RPATH issues and makes tests deterministic in CI environments.
 
 ---
